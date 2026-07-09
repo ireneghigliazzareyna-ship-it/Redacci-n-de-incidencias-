@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Incidencias TS HV</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@500;700&family=Afacad+Flux:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --accent-primary: #ffe4e6; 
+            --accent-yellow: #fef08a;
+            --accent-green: #dcfce7;
+            --focus-ring: #cbd5e1;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            font-family: 'Afacad Flux', sans-serif;
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 40px 20px;
+        }
+
+        header {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto 20px auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title {
+            font-family: 'Comfortaa', cursive;
+            font-size: 24px;
+            color: var(--text-dark);
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        /* Form & Display Panels */
+        .panel {
+            background-color: var(--card-bg);
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            padding: 40px;
+            min-height: 620px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--border-color);
+        }
+
+        .panel-title {
+            font-family: 'Comfortaa', cursive;
+            font-size: 32px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 15px;
+            line-height: 1.2;
+        }
+
+        .divider {
+            width: 80px;
+            height: 4px;
+            background-color: #e2e8f0;
+            margin: 0 auto 30px auto;
+            border-radius: 2px;
+        }
+
+        /* Form Elements styling */
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            padding-left: 4px;
+        }
+
+        .form-control, select {
+            width: 100%;
+            padding: 14px 20px;
+            font-size: 16px;
+            font-family: 'Afacad Flux', sans-serif;
+            color: var(--text-dark);
+            background-color: #f8fafc;
+            border: 1.5px solid var(--border-color);
+            border-radius: 12px;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .form-control:focus, select:focus {
+            border-color: #94a3b8;
+            background-color: #fff;
+            box-shadow: 0 0 0 4px rgba(226, 232, 240, 0.5);
+        }
+
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23475569' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 20px center;
+            background-size: 16px;
+            padding-right: 45px;
+        }
+
+        /* Right Panel Output */
+        .output-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            flex-grow: 1;
+        }
+
+        .bot-placeholder {
+            font-size: 22px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-dark);
+            transition: opacity 0.3s ease;
+        }
+
+        .draft-content {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #334155;
+            white-space: pre-line;
+            background-color: #f8fafc;
+            border: 1.5px dashed #cbd5e1;
+            border-radius: 16px;
+            padding: 25px;
+            margin-top: 10px;
+            flex-grow: 1;
+            display: none;
+            font-family: monospace;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        /* Action Buttons */
+        .action-area {
+            margin-top: 25px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 14px 20px;
+            font-size: 16px;
+            font-family: 'Comfortaa', cursive;
+            font-weight: 700;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--text-dark);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background-color: #0f172a;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background-color: #e2e8f0;
+            color: var(--text-dark);
+        }
+
+        .btn-secondary:hover {
+            background-color: #cbd5e1;
+            transform: translateY(-1px);
+        }
+
+        /* Webhook Settings */
+        .settings-bar {
+            margin-top: 25px;
+            background-color: #f8fafc;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            font-size: 14px;
+        }
+
+        .settings-bar p {
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .settings-bar input {
+            width: 100%;
+            padding: 8px 12px;
+            font-size: 13px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            outline: none;
+        }
+
+        /* Alert Notifications */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: var(--text-dark);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            transform: translateY(150px);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 100;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            .panel {
+                min-height: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-title">
+            <i class="fa-solid fa-code-merge" style="color: #6366f1; margin-right: 8px;"></i>Verdi Linker
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <!-- Left Panel: Form -->
+        <div class="panel">
+            <h1 class="panel-title">Reporte de<br>Incidencias TS HV</h1>
+            <div class="divider"></div>
+            
+            <form id="incidentForm">
+                <!-- Dropdown Representative Gender -->
+                <div class="form-group">
+                    <label for="sexoRep">Reportante</label>
+                    <select id="sexoRep" required>
+                        <option value="" disabled selected hidden>Elige el sexo del/la reportante</option>
+                        <option value="M">Masculino (El reportante)</option>
+                        <option value="F">Femenino (La reportante)</option>
+                    </select>
+                </div>
+
+                <!-- Representative Name -->
+                <div class="form-group">
+                    <label for="nombreRep">Nombre de quien reporta</label>
+                    <input type="text" id="nombreRep" class="form-control" placeholder="Nombre completo" required autocomplete="off">
+                </div>
+
+                <!-- Date Picker -->
+                <div class="form-group">
+                    <label for="fechaIncidencia">Fecha de la Incidencia</label>
+                    <input type="date" id="fechaIncidencia" class="form-control" required>
+                </div>
+
+                <!-- Pieces in Tote -->
+                <div class="form-group">
+                    <label for="piezasTote">Cantidad de piezas con afectación</label>
+                    <input type="number" id="piezasTote" class="form-control" placeholder="Número de unidades afectadas" required min="1">
+                </div>
+
+                <!-- Responsible Person -->
+                <div class="form-group">
+                    <label for="responsable">Responsable de la afectación</label>
+                    <input type="text" id="responsable" class="form-control" placeholder="Nombre o área responsable" required autocomplete="off">
+                </div>
+
+                <!-- Location of Incident / IS -->
+                <div class="form-group">
+                    <label for="ubicacionIS">Ubicación de la incidencia / IS</label>
+                    <input type="text" id="ubicacionIS" class="form-control" placeholder="Ubicación física / Inbound Shipment (IS)" required autocomplete="off">
+                </div>
+
+                <!-- Origin -->
+                <div class="form-group">
+                    <label for="origenTS">Origen de la TS</label>
+                    <input type="text" id="origenTS" class="form-control" placeholder="Fulfillment / Bodega de origen" required autocomplete="off">
+                </div>
+
+                <!-- Destination -->
+                <div class="form-group">
+                    <label for="destinoTS">Destino de la TS</label>
+                    <input type="text" id="destinoTS" class="form-control" placeholder="Fulfillment / Bodega de destino" required autocomplete="off">
+                </div>
+            </form>
+        </div>
+
+        <!-- Right Panel: Draft Display -->
+        <div class="panel">
+            <div class="output-container">
+                <div>
+                    <!-- Initial placeholder -->
+                    <div id="placeholder" class="bot-placeholder">
+                        <span>🤖: Aún no hay nada por aquí... Llena todos los campos para ver el machote.</span>
+                    </div>
+
+                    <!-- Live redacting output block -->
+                    <div id="draftBlock" class="draft-content"></div>
+                </div>
+
+                <!-- CTA Actions -->
+                <div>
+                    <div class="action-area">
+                        <button id="btnCopy" class="btn btn-secondary" disabled>
+                            <i class="fa-regular fa-copy"></i> Copiar Texto
+                        </button>
+                        <button id="btnSend" class="btn btn-primary" disabled>
+                            <i class="fa-solid fa-paper-plane"></i> Enviar a Verdi
+                        </button>
+                    </div>
+
+                    <!-- Integration Setup -->
+                    <div class="settings-bar">
+                        <p><i class="fa-solid fa-link"></i> Webhook URL de Verdi (n8n Form Trigger / Webhook node):</p>
+                        <input type="url" id="webhookUrl" placeholder="https://tu-instancia-verdi.flow/webhook/..." value="">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <i class="fa-solid fa-circle-check" style="color: #4ade80;"></i>
+        <span id="toastMessage">Texto copiado con éxito</span>
+    </div>
+
+    <script>
+        const formInputs = {
+            sexoRep: document.getElementById('sexoRep'),
+            nombreRep: document.getElementById('nombreRep'),
+            fechaIncidencia: document.getElementById('fechaIncidencia'),
+            piezasTote: document.getElementById('piezasTote'),
+            responsable: document.getElementById('responsable'),
+            ubicacionIS: document.getElementById('ubicacionIS'),
+            origenTS: document.getElementById('origenTS'),
+            destinoTS: document.getElementById('destinoTS')
+        };
+
+        const placeholder = document.getElementById('placeholder');
+        const draftBlock = document.getElementById('draftBlock');
+        const btnCopy = document.getElementById('btnCopy');
+        const btnSend = document.getElementById('btnSend');
+        const webhookUrlInput = document.getElementById('webhookUrl');
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
+
+        // Load saved webhook url from localStorage
+        if (localStorage.getItem('verdi_webhook_url')) {
+            webhookUrlInput.value = localStorage.getItem('verdi_webhook_url');
+        }
+
+        webhookUrlInput.addEventListener('input', (e) => {
+            localStorage.setItem('verdi_webhook_url', e.target.value);
+        });
+
+        // Event Listeners for inputs
+        Object.values(formInputs).forEach(input => {
+            input.addEventListener('input', updateDraft);
+            input.addEventListener('change', updateDraft);
+        });
+
+        function formatDisplayDate(dateStr) {
+            if (!dateStr) return '';
+            const parts = dateStr.split('-');
+            if (parts.length === 3) {
+                return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            }
+            return dateStr;
+        }
+
+        function updateDraft() {
+            const allFilled = Object.values(formInputs).every(input => input.value.trim() !== "");
+
+            if (!allFilled) {
+                placeholder.style.display = 'flex';
+                draftBlock.style.display = 'none';
+                btnCopy.disabled = true;
+                btnSend.disabled = true;
+                return;
+            }
+
+            placeholder.style.display = 'none';
+            draftBlock.style.display = 'block';
+            btnCopy.disabled = false;
+            btnSend.disabled = false;
+
+            const sexo = formInputs.sexoRep.value;
+            const reportanteIntro = (sexo === 'M') ? 'el reportante' : 'la reportante';
+            const nombre = formInputs.nombreRep.value;
+            const fechaFormateada = formatDisplayDate(formInputs.fechaIncidencia.value);
+            const piezas = formInputs.piezasTote.value;
+            const responsableVal = formInputs.responsable.value;
+            const ubicacionVal = formInputs.ubicacionIS.value;
+            const origenVal = formInputs.origenTS.value;
+            const destinoVal = formInputs.destinoTS.value;
+
+            // Machote format
+            let draftText = `*REPORTE DE INCIDENCIA: AFECTACIÓN DE MERCANCÍA TS HV* 🚨
+
+Se hace constar que el día *${fechaFormateada}*, ${reportanteIntro} *${nombre}* reportó una incidencia operativa de afectación de mercancía en el flujo de tránsito.
+
+*Detalles del Reporte:*
+- **Origen:** ${origenVal}
+- **Destino:** ${destinoVal}
+- **Ubicación de la Incidencia / IS:** ${ubicacionVal}
+- **Cantidad con Afectación:** ${piezas} pieza(s)
+- **Responsable Asignado:** ${responsableVal}
+
+*Descripción del caso:*
+Durante el proceso correspondiente de traslado, se identificaron anomalías físicas que involucran un total de ${piezas} pieza(s) con afectación directa en la ubicación/IS: \`${ubicacionVal}\`. Se da visibilidad al área responsable (*${responsableVal}*) para realizar las investigaciones operativas y ajustes de inventario necesarios en sistema.`;
+
+            draftBlock.innerText = draftText;
+        }
+
+        // Copy functionality
+        btnCopy.addEventListener('click', () => {
+            const textToCopy = draftBlock.innerText;
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    showToast("¡Texto copiado al portapapeles!");
+                }).catch(err => {
+                    fallbackCopy(textToCopy);
+                });
+            } else {
+                fallbackCopy(textToCopy);
+            }
+        });
+
+        function fallbackCopy(text) {
+            try {
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                textArea.style.position = "fixed";
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showToast("¡Texto copiado con éxito!");
+            } catch (err) {
+                console.error(err);
+                showToast("No se pudo copiar automáticamente.", true);
+            }
+        }
+
+        // Submit to Verdi Webhook
+        btnSend.addEventListener('click', () => {
+            const webhookUrl = webhookUrlInput.value.trim();
+            if (!webhookUrl) {
+                showToast("Error: Configura tu Webhook de Verdi primero", true);
+                return;
+            }
+
+            btnSend.disabled = true;
+            btnSend.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...';
+
+            const payload = {
+                sexo: formInputs.sexoRep.value,
+                nombreReportante: formInputs.nombreRep.value,
+                fecha: formInputs.fechaIncidencia.value,
+                piezasAfectadas: formInputs.piezasTote.value,
+                responsable: formInputs.responsable.value,
+                ubicacionIncidenciaOIS: formInputs.ubicacionIS.value,
+                origenTS: formInputs.origenTS.value,
+                destinoTS: formInputs.destinoTS.value,
+                redaccionGenerada: draftBlock.innerText
+            };
+
+            fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(response => {
+                if (response.ok) {
+                    showToast("¡Incidencia enviada con éxito a Verdi Flow!");
+                } else {
+                    throw new Error("Respuesta no óptima");
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                showToast("Error de red al enviar a Verdi Flow", true);
+            })
+            .finally(() => {
+                btnSend.disabled = false;
+                btnSend.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar a Verdi';
+            });
+        });
+
+        function showToast(message, isError = false) {
+            toastMessage.textContent = message;
+            if (isError) {
+                toast.style.backgroundColor = "#ef4444";
+            } else {
+                toast.style.backgroundColor = "var(--text-dark)";
+            }
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
