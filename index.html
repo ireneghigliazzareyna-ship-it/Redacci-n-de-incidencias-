@@ -56,7 +56,7 @@
         .form-group { display: flex; flex-direction: column; }
         .full-width { grid-column: 1 / -1; }
         
-        /* Por defecto, todos los grupos dinámicos están ocultos */
+        /* Oculta los campos por defecto hasta que se elija una opción */
         .dinamico { display: none; } 
         
         label { 
@@ -96,7 +96,7 @@
             <h2>Reporte de Incidencias<br>P2M CHECK-IN</h2>
             
             <div class="form-grid">
-                <!-- SELECTOR PRINCIPAL (Siempre visible) -->
+                <!-- SELECTOR PRINCIPAL -->
                 <div class="form-group full-width">
                     <label>Tipo de Incidencia</label>
                     <select id="tipoIncidencia" onchange="actualizarFormulario()">
@@ -111,7 +111,7 @@
                     </select>
                 </div>
 
-                <!-- CAMPOS (Ocultos por defecto con la clase 'dinamico') -->
+                <!-- CAMPOS DINÁMICOS -->
                 <div class="form-group dinamico" id="grupo-sexo">
                     <label>Sexo del Responsable</label>
                     <select id="sexo" oninput="generarTexto()">
@@ -135,20 +135,20 @@
                     <label>Sub Proceso</label>
                     <input type="text" id="proceso" oninput="generarTexto()">
                 </div>
-                <!-- NUEVO CAMPO IS -->
+                <!-- CAMPO IS AGREGADO Y LISTO -->
                 <div class="form-group dinamico" id="grupo-is">
                     <label>IS (Inbound Shipment)</label>
-                    <input type="text" id="is_num" oninput="generarTexto()" placeholder="Ej. IS12345678">
+                    <input type="text" id="is_num" placeholder="Ej. 12345678" oninput="generarTexto()">
                 </div>
                 <div class="form-group dinamico" id="grupo-mu">
                     <label>MU (Tote)</label>
                     <input type="text" id="mu" oninput="generarTexto()">
                 </div>
-                <div class="form-group dinamico full-width" id="grupo-monto">
+                <div class="form-group dinamico" id="grupo-monto">
                     <label>Monto de Afectación ($)</label>
                     <input type="number" id="monto" oninput="generarTexto()">
                 </div>
-                <div class="form-group dinamico full-width" id="grupo-meli">
+                <div class="form-group dinamico" id="grupo-meli">
                     <label>MELI / Código SKU</label>
                     <input type="text" id="meli" oninput="generarTexto()">
                 </div>
@@ -160,7 +160,7 @@
                     <label>MELI que ingresa de MENOS</label>
                     <input type="text" id="meli_menos" oninput="generarTexto()">
                 </div>
-                <div class="form-group dinamico full-width" id="grupo-codigo-universal">
+                <div class="form-group dinamico" id="grupo-codigo-universal">
                     <label>Código Universal (EAN)</label>
                     <input type="text" id="codigo_universal" oninput="generarTexto()">
                 </div>
@@ -173,7 +173,7 @@
                     <input type="number" id="piezas_sistema" oninput="generarTexto()">
                 </div>
 
-                <!-- INFORMACIÓN ADICIONAL (Oculta hasta seleccionar) -->
+                <!-- INFORMACIÓN ADICIONAL -->
                 <div class="form-group dinamico full-width" id="grupo-info-adicional" style="margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 15px;">
                     <label style="font-size: 14px; color: var(--text-dark);">Información Adicional</label>
                 </div>
@@ -209,24 +209,24 @@
         function actualizarFormulario() {
             const tipo = document.getElementById('tipoIncidencia').value;
             
-            // 1. Apagamos TODOS los campos dinámicos
+            // Apagamos TODOS los campos dinámicos
             document.querySelectorAll('.dinamico').forEach(campo => {
                 campo.style.display = 'none';
             });
 
             if (!tipo) {
                 generarTexto();
-                return; // Si no hay tipo, nos detenemos aquí (todo oculto)
+                return;
             }
 
-            // 2. Encendemos los campos base que todas las incidencias comparten
+            // Encendemos los campos base
             const camposComunes = ['grupo-fecha', 'grupo-hora', 'grupo-nombre', 'grupo-sexo', 'grupo-info-adicional', 'grupo-seller', 'grupo-destino', 'grupo-ubicacion'];
             
-            // 3. Encendemos SOLO los campos específicos según tu lista
+            // Asignamos los campos ESPECÍFICOS por incidencia
             let camposEspecificos = [];
             
             if (tipo === 'cruce') {
-                camposEspecificos = ['grupo-proceso', 'grupo-is', 'grupo-meli-mas', 'grupo-meli-menos', 'grupo-monto'];
+                camposEspecificos = ['grupo-proceso', 'grupo-is', 'grupo-monto', 'grupo-meli-mas', 'grupo-meli-menos'];
             } else if (tipo === 'derrame') {
                 camposEspecificos = ['grupo-meli', 'grupo-monto'];
             } else if (tipo === 'omision') {
@@ -241,13 +241,13 @@
                 camposEspecificos = ['grupo-proceso', 'grupo-mu', 'grupo-piezas-fisicas', 'grupo-piezas-sistema', 'grupo-monto', 'grupo-is'];
             }
 
-            // Mostrar los que corresponden
+            // Mostramos los que corresponden
             [...camposComunes, ...camposEspecificos].forEach(id => {
                 const elemento = document.getElementById(id);
                 if(elemento) elemento.style.display = 'flex';
             });
 
-            generarTexto(); // Actualizar el texto en pantalla
+            generarTexto();
         }
 
         function generarTexto() {
@@ -259,7 +259,7 @@
                 return;
             }
             
-            // Capturamos los datos (dejando en blanco si el usuario aún no escribe nada)
+            // Capturamos los datos
             const data = {
                 sexo: document.getElementById('sexo').value === 'la' ? 'la' : 'el',
                 nombre: document.getElementById('nombre').value || '____',
@@ -282,6 +282,7 @@
 
             let texto = "";
 
+            // Textos completamente limpios de notas (sin paréntesis)
             switch (tipo) {
                 case 'cruce':
                     texto = `Cruce de melis\nEl día de hoy ${data.fecha} a las ${data.hora} ${data.sexo} representante ${data.nombre} cruza la meli en el proceso ${data.proceso} ocasionando una discrepancia en la IS ${data.is_num} al dar ingreso a esta meli ${data.meli_mas} de más y dejar fuera del conteo el producto ${data.meli_menos} creando una afectación de $${data.monto} por lo cual se levanta la incidencia.`;
@@ -296,7 +297,7 @@
                     texto = `Bloqueo de códigos EAN\nEl día de hoy ${data.fecha} a las ${data.hora} ${data.sexo} representante ${data.nombre} en el proceso ${data.proceso} da ingreso al producto que cuenta con universal visible con la meli ${data.meli} sin bloquear el código universal ${data.codigo_universal} esto nos puede impactar de manera negativa ya que el código universal arroja en wms varios resultados de código sku, es un producto que al no bloquearse el código EAN tiene más posibilidades que haya un cruce en destino o en nuestro proceso PA. Monto de afectación $${data.monto}.`;
                     break;
                 case 'peso':
-                    texto = `Peso de MU mayor a 25 KG\nEl día de hoy ${data.fecha} a las ${data.hora} ${data.sexo} representante ${data.nombre} ingresa melis que pasan del límite de peso permitido por MU, arriesgando el producto y la salud de nuestros representantes MU ${data.mu}.`;
+                    texto = `Peso de MU mayor a 25 KG\nEl día de hoy ${data.fecha} a las ${data.hora} ${data.sexo} representante ${data.nombre} ingresa melis que pasan del límite de peso permitido por MU, arriesgando el producto y la salud de nuestros representantes en el MU ${data.mu}.`;
                     break;
                 case 'caducadas':
                     texto = `Producto en mal estado\nEl día de hoy ${data.fecha} a las ${data.hora} ${data.sexo} representante ${data.nombre} ingresa sin hacer el 360 en el producto melis con la fecha de caducidad vencida en el MU ${data.mu} producto involucrado ${data.meli} afectación $${data.monto}.`;
