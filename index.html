@@ -8,7 +8,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@500;700&family=Afacad+Flux:wght@400;500;600&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <style>
@@ -19,7 +18,6 @@
             --text-muted: #64748b;
             --border-color: #e2e8f0;
             --accent-primary: #ffe4e6;
-            --accent-yellow: #fef08a;
             --btn-dark: #1e293b;
             --btn-light: #e2e8f0;
         }
@@ -51,77 +49,40 @@
             width: 50%;
         }
 
-        h2 {
-            text-align: center;
-            font-family: 'Afacad Flux', sans-serif;
-            margin-top: 0;
-            color: var(--text-dark);
-        }
+        h2 { text-align: center; font-family: 'Afacad Flux', sans-serif; margin-top: 0; }
 
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 
         .form-group { display: flex; flex-direction: column; }
-        .form-group.full-width { grid-column: 1 / -1; }
+        .full-width { grid-column: 1 / -1; }
+        
+        /* Por defecto, todos los grupos dinámicos están ocultos */
+        .dinamico { display: none; } 
         
         label { 
-            font-size: 11px; 
-            font-weight: 700;
-            color: var(--text-muted); 
-            margin-bottom: 6px; 
-            text-transform: uppercase;
+            font-size: 11px; font-weight: 700; color: var(--text-muted); 
+            margin-bottom: 6px; text-transform: uppercase;
         }
 
         input, select {
-            padding: 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-family: inherit;
-            font-size: 14px;
-            color: var(--text-dark);
+            padding: 12px; border: 1px solid var(--border-color);
+            border-radius: 8px; font-family: inherit; font-size: 14px;
             outline: none;
         }
 
         input:focus, select:focus { border-color: #94a3b8; }
 
-        .campo-dinamico { display: none; } /* Oculto por defecto */
-
-        /* Estilos del panel de texto */
         #resultadoTexto {
-            width: 100%;
-            height: 400px;
-            border: none;
-            resize: none;
-            font-family: 'Afacad Flux', sans-serif;
-            font-size: 16px;
-            line-height: 1.6;
-            color: var(--text-dark);
-            background: transparent;
-            outline: none;
+            width: 100%; height: 400px; border: none; resize: none;
+            font-family: 'Afacad Flux', sans-serif; font-size: 16px; line-height: 1.6;
+            background: transparent; outline: none;
         }
 
-        .btn-container { 
-            display: flex; 
-            gap: 12px; 
-            margin-top: 20px; 
-        }
-
+        .btn-container { display: flex; gap: 12px; margin-top: 20px; }
         button {
-            flex: 1;
-            padding: 14px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-family: inherit;
-            font-size: 14px;
-            font-weight: 700;
-            transition: opacity 0.2s;
+            flex: 1; padding: 14px; border: none; border-radius: 8px;
+            cursor: pointer; font-family: inherit; font-size: 14px; font-weight: 700;
         }
-
-        button:hover { opacity: 0.9; }
         .btn-copy { background: var(--btn-light); color: var(--text-dark); }
         .btn-send { background: var(--btn-dark); color: #fff; }
     </style>
@@ -148,77 +109,76 @@
                     </select>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group dinamico" id="grupo-sexo">
                     <label>Sexo del Responsable</label>
                     <select id="sexo" oninput="generarTexto()">
                         <option value="el">El</option>
                         <option value="la">La</option>
                     </select>
                 </div>
-                <div class="form-group">
+                <div class="form-group dinamico" id="grupo-nombre">
                     <label>Nombre del Responsable</label>
-                    <input type="text" id="nombre" placeholder="Nombre de la responsable" oninput="generarTexto()">
+                    <input type="text" id="nombre" oninput="generarTexto()">
                 </div>
-                <div class="form-group">
+                <div class="form-group dinamico" id="grupo-fecha">
                     <label>Fecha de la Incidencia</label>
                     <input type="date" id="fecha" oninput="generarTexto()">
                 </div>
-                <div class="form-group">
+                <div class="form-group dinamico" id="grupo-hora">
                     <label>Hora de la Incidencia</label>
                     <input type="time" id="hora" oninput="generarTexto()">
                 </div>
-                <div class="form-group">
+                <div class="form-group dinamico" id="grupo-proceso">
                     <label>Sub Proceso</label>
-                    <input type="text" id="proceso" placeholder="Ej. Pick to movable" oninput="generarTexto()">
+                    <input type="text" id="proceso" oninput="generarTexto()">
                 </div>
-                <div class="form-group">
+                <div class="form-group dinamico" id="grupo-mu">
                     <label>MU (Tote)</label>
-                    <input type="text" id="mu" placeholder="Ej. Tote 1024" oninput="generarTexto()">
+                    <input type="text" id="mu" oninput="generarTexto()">
                 </div>
-                <div class="form-group full-width">
+                <div class="form-group dinamico full-width" id="grupo-monto">
                     <label>Monto de Afectación ($)</label>
-                    <input type="number" id="monto" placeholder="Monto en pesos" oninput="generarTexto()">
+                    <input type="number" id="monto" oninput="generarTexto()">
                 </div>
-
-                <div class="form-group campo-dinamico full-width" id="div-meli">
+                <div class="form-group dinamico full-width" id="grupo-meli">
                     <label>MELI / Código SKU</label>
-                    <input type="text" id="meli" placeholder="Código de la MELI" oninput="generarTexto()">
+                    <input type="text" id="meli" oninput="generarTexto()">
                 </div>
-                <div class="form-group campo-dinamico" id="div-meli-mas">
+                <div class="form-group dinamico" id="grupo-meli-mas">
                     <label>MELI que ingresa de MÁS</label>
                     <input type="text" id="meli_mas" oninput="generarTexto()">
                 </div>
-                <div class="form-group campo-dinamico" id="div-meli-menos">
+                <div class="form-group dinamico" id="grupo-meli-menos">
                     <label>MELI que ingresa de MENOS</label>
                     <input type="text" id="meli_menos" oninput="generarTexto()">
                 </div>
-                <div class="form-group campo-dinamico full-width" id="div-codigo-universal">
+                <div class="form-group dinamico full-width" id="grupo-codigo-universal">
                     <label>Código Universal (EAN)</label>
                     <input type="text" id="codigo_universal" oninput="generarTexto()">
                 </div>
-                <div class="form-group campo-dinamico" id="div-piezas-fisicas">
+                <div class="form-group dinamico" id="grupo-piezas-fisicas">
                     <label>Piezas ingresadas (Físico)</label>
                     <input type="number" id="piezas_fisicas" oninput="generarTexto()">
                 </div>
-                <div class="form-group campo-dinamico" id="div-piezas-sistema">
-                    <label>Piezas ingresadas en Sistema</label>
+                <div class="form-group dinamico" id="grupo-piezas-sistema">
+                    <label>Piezas ingresadas (Sistema)</label>
                     <input type="number" id="piezas_sistema" oninput="generarTexto()">
                 </div>
 
-                <div class="form-group full-width" style="margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 15px;">
+                <div class="form-group dinamico full-width" id="grupo-info-adicional" style="margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 15px;">
                     <label style="font-size: 14px; color: var(--text-dark);">Información Adicional</label>
                 </div>
-                <div class="form-group">
+                <div class="form-group dinamico" id="grupo-seller">
                     <label>Seller</label>
-                    <input type="text" id="seller" placeholder="Nombre del seller" oninput="generarTexto()">
+                    <input type="text" id="seller" oninput="generarTexto()">
                 </div>
-                <div class="form-group">
+                <div class="form-group dinamico" id="grupo-destino">
                     <label>Destino</label>
-                    <input type="text" id="destino" placeholder="Site destino" oninput="generarTexto()">
+                    <input type="text" id="destino" oninput="generarTexto()">
                 </div>
-                <div class="form-group full-width">
+                <div class="form-group dinamico full-width" id="grupo-ubicacion">
                     <label>Ubicación de Incidencia</label>
-                    <input type="text" id="ubicacion" placeholder="Ubicación" oninput="generarTexto()">
+                    <input type="text" id="ubicacion" oninput="generarTexto()">
                 </div>
             </div>
         </div>
@@ -238,25 +198,45 @@
         function actualizarFormulario() {
             const tipo = document.getElementById('tipoIncidencia').value;
             
-            // Ocultar todos los campos dinámicos
-            const camposDinamicos = document.querySelectorAll('.campo-dinamico');
-            camposDinamicos.forEach(campo => campo.style.display = 'none');
+            // 1. Apagamos TODOS los campos dinámicos
+            document.querySelectorAll('.dinamico').forEach(campo => {
+                campo.style.display = 'none';
+            });
 
-            // Mostrar los necesarios según selección
-            if (tipo === 'cruce') {
-                document.getElementById('div-meli-mas').style.display = 'flex';
-                document.getElementById('div-meli-menos').style.display = 'flex';
-            } else if (tipo === 'derrame' || tipo === 'omision' || tipo === 'caducadas') {
-                document.getElementById('div-meli').style.display = 'flex';
-            } else if (tipo === 'bloqueo') {
-                document.getElementById('div-meli').style.display = 'flex';
-                document.getElementById('div-codigo-universal').style.display = 'flex';
-            } else if (tipo === 'inflacion') {
-                document.getElementById('div-piezas-fisicas').style.display = 'flex';
-                document.getElementById('div-piezas-sistema').style.display = 'flex';
+            if (!tipo) {
+                generarTexto();
+                return; // Si no hay tipo, nos detenemos aquí (todo oculto)
             }
 
-            generarTexto(); // Ejecutar para actualizar la pantalla
+            // 2. Encendemos los campos base que todas las incidencias comparten
+            const camposComunes = ['grupo-fecha', 'grupo-hora', 'grupo-nombre', 'grupo-sexo', 'grupo-info-adicional', 'grupo-seller', 'grupo-destino', 'grupo-ubicacion'];
+            
+            // 3. Encendemos SOLO los campos específicos según tu lista
+            let camposEspecificos = [];
+            
+            if (tipo === 'cruce') {
+                camposEspecificos = ['grupo-proceso', 'grupo-meli-mas', 'grupo-meli-menos', 'grupo-monto'];
+            } else if (tipo === 'derrame') {
+                camposEspecificos = ['grupo-meli', 'grupo-monto'];
+            } else if (tipo === 'omision') {
+                camposEspecificos = ['grupo-meli', 'grupo-proceso', 'grupo-monto'];
+            } else if (tipo === 'bloqueo') {
+                camposEspecificos = ['grupo-proceso', 'grupo-meli', 'grupo-codigo-universal', 'grupo-monto'];
+            } else if (tipo === 'peso') {
+                camposEspecificos = ['grupo-mu']; // Peso no pide monto en tu redacción
+            } else if (tipo === 'caducadas') {
+                camposEspecificos = ['grupo-mu', 'grupo-meli', 'grupo-monto'];
+            } else if (tipo === 'inflacion') {
+                camposEspecificos = ['grupo-proceso', 'grupo-mu', 'grupo-piezas-fisicas', 'grupo-piezas-sistema', 'grupo-monto'];
+            }
+
+            // Mostrar los que corresponden
+            [...camposComunes, ...camposEspecificos].forEach(id => {
+                const elemento = document.getElementById(id);
+                if(elemento) elemento.style.display = 'flex';
+            });
+
+            generarTexto(); // Actualizar el texto en pantalla
         }
 
         function generarTexto() {
@@ -264,36 +244,35 @@
             const textarea = document.getElementById('resultadoTexto');
 
             if (!tipo) {
-                textarea.value = "🤖: Aún no hay nada por aquí... Selecciona el tipo de incidencia en el menú de la izquierda y llena los campos para estructurar automáticamente la descripción.";
+                textarea.value = "🤖: Aún no hay nada por aquí... Selecciona el tipo de incidencia en el menú de la izquierda.";
                 return;
             }
             
-            // Captura de datos
+            // Capturamos los datos (dejando en blanco si el usuario aún no escribe nada)
             const data = {
                 sexo: document.getElementById('sexo').value === 'la' ? 'la' : 'el',
-                nombre: document.getElementById('nombre').value || '[Responsable]',
-                fecha: document.getElementById('fecha').value || '[Fecha]',
-                hora: document.getElementById('hora').value || '[Hora]',
-                proceso: document.getElementById('proceso').value || '[Proceso]',
-                mu: document.getElementById('mu').value || '[Tote]',
-                monto: document.getElementById('monto').value || '[Monto]',
-                meli: document.getElementById('meli').value || '[SKU]',
-                meli_mas: document.getElementById('meli_mas').value || '[Meli de más]',
-                meli_menos: document.getElementById('meli_menos').value || '[Meli de menos]',
-                codigo_universal: document.getElementById('codigo_universal').value || '[Código EAN]',
-                piezas_fisicas: document.getElementById('piezas_fisicas').value || '[Pz Físicas]',
-                piezas_sistema: document.getElementById('piezas_sistema').value || '[Pz Sistema]',
-                seller: document.getElementById('seller').value || '[Seller]',
-                destino: document.getElementById('destino').value || '[Destino]',
-                ubicacion: document.getElementById('ubicacion').value || '[Ubicación]'
+                nombre: document.getElementById('nombre').value || '____',
+                fecha: document.getElementById('fecha').value || '____',
+                hora: document.getElementById('hora').value || '____',
+                proceso: document.getElementById('proceso').value || '____',
+                mu: document.getElementById('mu').value || '____',
+                monto: document.getElementById('monto').value || '____',
+                meli: document.getElementById('meli').value || '____',
+                meli_mas: document.getElementById('meli_mas').value || '____',
+                meli_menos: document.getElementById('meli_menos').value || '____',
+                codigo_universal: document.getElementById('codigo_universal').value || '____',
+                piezas_fisicas: document.getElementById('piezas_fisicas').value || '____',
+                piezas_sistema: document.getElementById('piezas_sistema').value || '____',
+                seller: document.getElementById('seller').value || '____',
+                destino: document.getElementById('destino').value || '____',
+                ubicacion: document.getElementById('ubicacion').value || '____'
             };
 
             let texto = "";
 
-            // Selección de plantilla
             switch (tipo) {
                 case 'cruce':
-                    texto = `Cruce de melis\nEl día de hoy ${data.fecha} a las ${data.hora}, ${data.sexo} representante ${data.nombre} cruza la meli en el proceso ${data.proceso} ocasionando una discrepancia en la IS (Inbound shipment) al dar ingreso a esta meli ${data.meli_mas} de más y dejar fuera del conteo el producto ${data.meli_menos} creando una afectación de $${data.monto} por lo cual se levanta la incidencia.`;
+                    texto = `Cruce de melis\nEl día de hoy ${data.fecha} a las ${data.hora} ${data.sexo} representante ${data.nombre} cruza la meli en el proceso ${data.proceso} ocasionando una discrepancia en la IS (Inbound shipment) al dar ingreso a esta meli ${data.meli_mas} de más y dejar fuera del conteo el producto ${data.meli_menos} creando una afectación de $${data.monto} por lo cual se levanta la incidencia.`;
                     break;
                 case 'derrame':
                     texto = `Derrame de producto calidad\nEl día de hoy ${data.fecha} a las ${data.hora} se levanta la incidencia a la meli ${data.meli} ya que el producto sufre daños en nuestro site al no recibir los cuidados necesarios por parte de ${data.sexo} representante ${data.nombre} creando una afectación de $${data.monto}.`;
@@ -302,26 +281,24 @@
                     texto = `Omisión de producto 1 a 1 (Traspaleo de tarima)\nEl día ${data.fecha} a las ${data.hora}, ${data.sexo} representante ${data.nombre}, da ingreso a la meli ${data.meli} de manera masiva en el proceso ${data.proceso}, no respetando el 1 a 1 en el producto. Esto nos puede ocasionar una discrepancia ya que al no estar seguros de que la tarima cuente con una sola meli, además de que el producto no fue revisado al dar ingreso en nuestro site de manera individual corremos el riego que se canalice a otro site destino con el error de inflación de meli y producto que no ingresamos. Posible monto de afectación: $${data.monto}.`;
                     break;
                 case 'bloqueo':
-                    texto = `Bloqueo de códigos EAN\nEl día de hoy ${data.fecha} a las ${data.hora}, ${data.sexo} representante ${data.nombre} en el proceso ${data.proceso} da ingreso al producto que cuenta con universal visible con la meli ${data.meli} sin bloquear el código universal ${data.codigo_universal}. Esto nos puede impactar de manera negativa ya que el código universal arroja en wms varios resultados de código sku. Es un producto que al no bloquearse el código EAN tiene más posibilidades que haya un cruce en destino o en nuestro proceso PA. Monto de afectación: $${data.monto}.`;
+                    texto = `Bloqueo de códigos EAN\nEl día de hoy ${data.fecha} a las ${data.hora} ${data.sexo} representante ${data.nombre} en el proceso ${data.proceso} da ingreso al producto que cuenta con universal visible con la meli ${data.meli} sin bloquear el código universal ${data.codigo_universal} esto nos puede impactar de manera negativa ya que el código universal arroja en wms varios resultados de código sku, es un producto que al no bloquearse el código EAN tiene más posibilidades que haya un cruce en destino o en nuestro proceso PA. Monto de afectación $${data.monto}.`;
                     break;
                 case 'peso':
-                    texto = `Peso de MU mayor a 25 KG\nEl día de hoy ${data.fecha} a las ${data.hora}, ${data.sexo} representante ${data.nombre} ingresa melis que pasan del límite de peso permitido por MU, arriesgando el producto y la salud de nuestros representantes en el MU ${data.mu}.`;
+                    texto = `Peso de MU mayor a 25 KG\nEl día de hoy ${data.fecha} a las ${data.hora} ${data.sexo} representante ${data.nombre} ingresa melis que pasan del límite de peso permitido por MU, arriesgando el producto y la salud de nuestros representantes MU ${data.mu}.`;
                     break;
                 case 'caducadas':
-                    texto = `Producto en mal estado (Melis caducadas)\nEl día de hoy ${data.fecha} a las ${data.hora}, ${data.sexo} representante ${data.nombre} ingresa sin hacer el 360 en el producto melis con la fecha de caducidad vencida en el MU ${data.mu}. Producto involucrado: ${data.meli}. Afectación: $${data.monto}.`;
+                    texto = `Producto en mal estado\nEl día de hoy ${data.fecha} a las ${data.hora} ${data.sexo} representante ${data.nombre} ingresa sin hacer el 360 en el producto melis con la fecha de caducidad vencida en el MU ${data.mu} producto involucrado ${data.meli} afectación $${data.monto}.`;
                     break;
                 case 'inflacion':
                     texto = `Inflación de meli en MU / no ingreso de meli en IS\nEl día ${data.fecha} a las ${data.hora}, ${data.sexo} representante ${data.nombre} comete la omisión de proceso en ${data.proceso}, ingresa al MU ${data.mu} la cantidad de ${data.piezas_fisicas} piezas físicamente aunque en sistema ingresa ${data.piezas_sistema} generando una afectación de $${data.monto} en la IS (Inbound shipment).`;
                     break;
             }
 
-            // Anexar información adicional
             texto += `\n\n*Información Adicional:*\n- Seller: ${data.seller}\n- Destino: ${data.destino}\n- Ubicación de la incidencia: ${data.ubicacion}`;
             
             textarea.value = texto;
         }
 
-        // Función extra para que el botón "Copiar Texto" funcione
         function copiarAlPortapapeles() {
             const textarea = document.getElementById('resultadoTexto');
             textarea.select();
@@ -329,7 +306,6 @@
             alert("¡Texto copiado listo para pegar!");
         }
 
-        // Inicializar el formulario al cargar
         window.onload = actualizarFormulario;
     </script>
 </body>
