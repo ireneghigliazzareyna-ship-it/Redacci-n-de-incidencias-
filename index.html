@@ -91,10 +91,12 @@
 
     <div class="container">
         
+        <!-- PANEL IZQUIERDO -->
         <div class="panel">
             <h2>Reporte de Incidencias<br>P2M CHECK-IN</h2>
             
             <div class="form-grid">
+                <!-- SELECTOR PRINCIPAL (Siempre visible) -->
                 <div class="form-group full-width">
                     <label>Tipo de Incidencia</label>
                     <select id="tipoIncidencia" onchange="actualizarFormulario()">
@@ -109,6 +111,7 @@
                     </select>
                 </div>
 
+                <!-- CAMPOS (Ocultos por defecto con la clase 'dinamico') -->
                 <div class="form-group dinamico" id="grupo-sexo">
                     <label>Sexo del Responsable</label>
                     <select id="sexo" oninput="generarTexto()">
@@ -131,6 +134,11 @@
                 <div class="form-group dinamico" id="grupo-proceso">
                     <label>Sub Proceso</label>
                     <input type="text" id="proceso" oninput="generarTexto()">
+                </div>
+                <!-- NUEVO CAMPO IS -->
+                <div class="form-group dinamico" id="grupo-is">
+                    <label>IS (Inbound Shipment)</label>
+                    <input type="text" id="is_num" oninput="generarTexto()" placeholder="Ej. IS12345678">
                 </div>
                 <div class="form-group dinamico" id="grupo-mu">
                     <label>MU (Tote)</label>
@@ -165,6 +173,7 @@
                     <input type="number" id="piezas_sistema" oninput="generarTexto()">
                 </div>
 
+                <!-- INFORMACIÓN ADICIONAL (Oculta hasta seleccionar) -->
                 <div class="form-group dinamico full-width" id="grupo-info-adicional" style="margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 15px;">
                     <label style="font-size: 14px; color: var(--text-dark);">Información Adicional</label>
                 </div>
@@ -183,6 +192,7 @@
             </div>
         </div>
 
+        <!-- PANEL DERECHO -->
         <div class="panel" style="display: flex; flex-direction: column; justify-content: space-between;">
             <textarea id="resultadoTexto" readonly></textarea>
             
@@ -194,6 +204,7 @@
 
     </div>
 
+    <!-- SCRIPT DE LÓGICA -->
     <script>
         function actualizarFormulario() {
             const tipo = document.getElementById('tipoIncidencia').value;
@@ -215,7 +226,7 @@
             let camposEspecificos = [];
             
             if (tipo === 'cruce') {
-                camposEspecificos = ['grupo-proceso', 'grupo-meli-mas', 'grupo-meli-menos', 'grupo-monto'];
+                camposEspecificos = ['grupo-proceso', 'grupo-is', 'grupo-meli-mas', 'grupo-meli-menos', 'grupo-monto'];
             } else if (tipo === 'derrame') {
                 camposEspecificos = ['grupo-meli', 'grupo-monto'];
             } else if (tipo === 'omision') {
@@ -223,11 +234,11 @@
             } else if (tipo === 'bloqueo') {
                 camposEspecificos = ['grupo-proceso', 'grupo-meli', 'grupo-codigo-universal', 'grupo-monto'];
             } else if (tipo === 'peso') {
-                camposEspecificos = ['grupo-mu']; // Peso no pide monto en tu redacción
+                camposEspecificos = ['grupo-mu']; 
             } else if (tipo === 'caducadas') {
                 camposEspecificos = ['grupo-mu', 'grupo-meli', 'grupo-monto'];
             } else if (tipo === 'inflacion') {
-                camposEspecificos = ['grupo-proceso', 'grupo-mu', 'grupo-piezas-fisicas', 'grupo-piezas-sistema', 'grupo-monto'];
+                camposEspecificos = ['grupo-proceso', 'grupo-mu', 'grupo-piezas-fisicas', 'grupo-piezas-sistema', 'grupo-monto', 'grupo-is'];
             }
 
             // Mostrar los que corresponden
@@ -255,6 +266,7 @@
                 fecha: document.getElementById('fecha').value || '____',
                 hora: document.getElementById('hora').value || '____',
                 proceso: document.getElementById('proceso').value || '____',
+                is_num: document.getElementById('is_num').value || '____',
                 mu: document.getElementById('mu').value || '____',
                 monto: document.getElementById('monto').value || '____',
                 meli: document.getElementById('meli').value || '____',
@@ -272,7 +284,7 @@
 
             switch (tipo) {
                 case 'cruce':
-                    texto = `Cruce de melis\nEl día de hoy ${data.fecha} a las ${data.hora} ${data.sexo} representante ${data.nombre} cruza la meli en el proceso ${data.proceso} ocasionando una discrepancia en la IS (Inbound shipment) al dar ingreso a esta meli ${data.meli_mas} de más y dejar fuera del conteo el producto ${data.meli_menos} creando una afectación de $${data.monto} por lo cual se levanta la incidencia.`;
+                    texto = `Cruce de melis\nEl día de hoy ${data.fecha} a las ${data.hora} ${data.sexo} representante ${data.nombre} cruza la meli en el proceso ${data.proceso} ocasionando una discrepancia en la IS ${data.is_num} al dar ingreso a esta meli ${data.meli_mas} de más y dejar fuera del conteo el producto ${data.meli_menos} creando una afectación de $${data.monto} por lo cual se levanta la incidencia.`;
                     break;
                 case 'derrame':
                     texto = `Derrame de producto calidad\nEl día de hoy ${data.fecha} a las ${data.hora} se levanta la incidencia a la meli ${data.meli} ya que el producto sufre daños en nuestro site al no recibir los cuidados necesarios por parte de ${data.sexo} representante ${data.nombre} creando una afectación de $${data.monto}.`;
@@ -290,7 +302,7 @@
                     texto = `Producto en mal estado\nEl día de hoy ${data.fecha} a las ${data.hora} ${data.sexo} representante ${data.nombre} ingresa sin hacer el 360 en el producto melis con la fecha de caducidad vencida en el MU ${data.mu} producto involucrado ${data.meli} afectación $${data.monto}.`;
                     break;
                 case 'inflacion':
-                    texto = `Inflación de meli en MU / no ingreso de meli en IS\nEl día ${data.fecha} a las ${data.hora}, ${data.sexo} representante ${data.nombre} comete la omisión de proceso en ${data.proceso}, ingresa al MU ${data.mu} la cantidad de ${data.piezas_fisicas} piezas físicamente aunque en sistema ingresa ${data.piezas_sistema} generando una afectación de $${data.monto} en la IS (Inbound shipment).`;
+                    texto = `Inflación de meli en MU / no ingreso de meli en IS\nEl día ${data.fecha} a las ${data.hora}, ${data.sexo} representante ${data.nombre} comete la omisión de proceso en ${data.proceso}, ingresa al MU ${data.mu} la cantidad de ${data.piezas_fisicas} piezas físicamente aunque en sistema ingresa ${data.piezas_sistema} generando una afectación de $${data.monto} en la IS ${data.is_num}.`;
                     break;
             }
 
