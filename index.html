@@ -91,12 +91,10 @@
 
     <div class="container">
         
-        <!-- PANEL IZQUIERDO -->
         <div class="panel">
             <h2>Reporte de Incidencias<br>P2M CHECK-IN</h2>
             
             <div class="form-grid">
-                <!-- SELECTOR PRINCIPAL -->
                 <div class="form-group full-width">
                     <label>Tipo de Incidencia</label>
                     <select id="tipoIncidencia" onchange="actualizarFormulario()">
@@ -108,10 +106,10 @@
                         <option value="peso">Peso permitido en MU (no mayor a 25 kg)</option>
                         <option value="caducadas">Melis caducadas (vencidas)</option>
                         <option value="inflacion">Inflacion de meli en MU / no ingreso en IS</option>
+                        <option value="masterpack">Posible Master Pack</option>
                     </select>
                 </div>
 
-                <!-- CAMPOS DINÁMICOS -->
                 <div class="form-group dinamico" id="grupo-sexo">
                     <label>Sexo del Responsable</label>
                     <select id="sexo" oninput="generarTexto()">
@@ -135,7 +133,6 @@
                     <label>Sub Proceso</label>
                     <input type="text" id="proceso" oninput="generarTexto()">
                 </div>
-                <!-- CAMPO IS AGREGADO Y LISTO -->
                 <div class="form-group dinamico" id="grupo-is">
                     <label>IS (Inbound Shipment)</label>
                     <input type="text" id="is_num" placeholder="Ej. 12345678" oninput="generarTexto()">
@@ -173,7 +170,6 @@
                     <input type="number" id="piezas_sistema" oninput="generarTexto()">
                 </div>
 
-                <!-- INFORMACIÓN ADICIONAL -->
                 <div class="form-group dinamico full-width" id="grupo-info-adicional" style="margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 15px;">
                     <label style="font-size: 14px; color: var(--text-dark);">Información Adicional</label>
                 </div>
@@ -192,7 +188,6 @@
             </div>
         </div>
 
-        <!-- PANEL DERECHO -->
         <div class="panel" style="display: flex; flex-direction: column; justify-content: space-between;">
             <textarea id="resultadoTexto" readonly></textarea>
             
@@ -204,7 +199,6 @@
 
     </div>
 
-    <!-- SCRIPT DE LÓGICA -->
     <script>
         function actualizarFormulario() {
             const tipo = document.getElementById('tipoIncidencia').value;
@@ -239,6 +233,9 @@
                 camposEspecificos = ['grupo-mu', 'grupo-meli', 'grupo-monto'];
             } else if (tipo === 'inflacion') {
                 camposEspecificos = ['grupo-proceso', 'grupo-mu', 'grupo-piezas-fisicas', 'grupo-piezas-sistema', 'grupo-monto', 'grupo-is'];
+            } else if (tipo === 'masterpack') {
+                // CONDICIÓN AÑADIDA PARA MASTER PACK
+                camposEspecificos = ['grupo-meli', 'grupo-monto'];
             }
 
             // Mostramos los que corresponden
@@ -305,8 +302,13 @@
                 case 'inflacion':
                     texto = `Inflación de meli en MU / no ingreso de meli en IS\nEl día ${data.fecha} a las ${data.hora}, ${data.sexo} representante ${data.nombre} comete la omisión de proceso en ${data.proceso}, ingresa al MU ${data.mu} la cantidad de ${data.piezas_fisicas} piezas físicamente aunque en sistema ingresa ${data.piezas_sistema} generando una afectación de $${data.monto} en la IS ${data.is_num}.`;
                     break;
+                case 'masterpack':
+                    // NUEVO CASO AÑADIDO PARA MASTER PACK
+                    texto = `Posible Master Pack\nEl día ${data.fecha} a las ${data.hora}, ${data.sexo} representante ${data.nombre}, da ingreso a la meli ${data.meli} de manera masiva en el proceso PUT AWAY, no respetando el 1 a 1 en el producto lo que provoco un posible master pack al no retirar las cajas y dejarlas completas. Esto nos puede ocasionar una discrepancia ya que al no estar seguros de que la caja cuente con una sola meli, además de que el producto no fue revisado al dar ingreso en nuestro site de manera individual corremos el riesgo que se lo lleven como caja y no como producto individual la meli. Posible monto de afectación: $${data.monto}.`;
+                    break;
             }
 
+            // Los campos de seller, destino y ubicación ya se anexan automáticamente al final de todas las incidencias
             texto += `\n\n*Información Adicional:*\n- Seller: ${data.seller}\n- Destino: ${data.destino}\n- Ubicación de la incidencia: ${data.ubicacion}`;
             
             textarea.value = texto;
