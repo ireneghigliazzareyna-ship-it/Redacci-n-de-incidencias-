@@ -107,6 +107,7 @@
                         <option value="caducadas">Melis caducadas (vencidas)</option>
                         <option value="inflacion">Inflacion de meli en MU / no ingreso en IS</option>
                         <option value="masterpack">Posible Master Pack</option>
+                        <option value="eliminacion_found">Eliminacion de found</option>
                     </select>
                 </div>
 
@@ -156,6 +157,10 @@
                 <div class="form-group dinamico" id="grupo-meli-menos">
                     <label>MELI que ingresa de MENOS</label>
                     <input type="text" id="meli_menos" oninput="generarTexto()">
+                </div>
+                <div class="form-group dinamico" id="grupo-meli-lost">
+                    <label>MELI del Lost</label>
+                    <input type="text" id="meli_lost" oninput="generarTexto()">
                 </div>
                 <div class="form-group dinamico" id="grupo-codigo-universal">
                     <label>Código Universal (EAN)</label>
@@ -234,8 +239,10 @@
             } else if (tipo === 'inflacion') {
                 camposEspecificos = ['grupo-proceso', 'grupo-mu', 'grupo-piezas-fisicas', 'grupo-piezas-sistema', 'grupo-monto', 'grupo-is'];
             } else if (tipo === 'masterpack') {
-                // CONDICIÓN AÑADIDA PARA MASTER PACK
                 camposEspecificos = ['grupo-meli', 'grupo-monto'];
+            } else if (tipo === 'eliminacion_found') {
+                // CAMPOS PARA ELIMINACIÓN DE FOUND
+                camposEspecificos = ['grupo-meli', 'grupo-proceso', 'grupo-piezas-fisicas', 'grupo-meli-lost', 'grupo-codigo-universal'];
             }
 
             // Mostramos los que corresponden
@@ -269,6 +276,7 @@
                 meli: document.getElementById('meli').value || '____',
                 meli_mas: document.getElementById('meli_mas').value || '____',
                 meli_menos: document.getElementById('meli_menos').value || '____',
+                meli_lost: document.getElementById('meli_lost').value || '____',
                 codigo_universal: document.getElementById('codigo_universal').value || '____',
                 piezas_fisicas: document.getElementById('piezas_fisicas').value || '____',
                 piezas_sistema: document.getElementById('piezas_sistema').value || '____',
@@ -279,7 +287,6 @@
 
             let texto = "";
 
-            // Textos completamente limpios de notas (sin paréntesis)
             switch (tipo) {
                 case 'cruce':
                     texto = `Cruce de melis\nEl día de hoy ${data.fecha} a las ${data.hora} ${data.sexo} representante ${data.nombre} cruza la meli en el proceso ${data.proceso} ocasionando una discrepancia en la IS ${data.is_num} al dar ingreso a esta meli ${data.meli_mas} de más y dejar fuera del conteo el producto ${data.meli_menos} creando una afectación de $${data.monto} por lo cual se levanta la incidencia.`;
@@ -303,12 +310,14 @@
                     texto = `Inflación de meli en MU / no ingreso de meli en IS\nEl día ${data.fecha} a las ${data.hora}, ${data.sexo} representante ${data.nombre} comete la omisión de proceso en ${data.proceso}, ingresa al MU ${data.mu} la cantidad de ${data.piezas_fisicas} piezas físicamente aunque en sistema ingresa ${data.piezas_sistema} generando una afectación de $${data.monto} en la IS ${data.is_num}.`;
                     break;
                 case 'masterpack':
-                    // NUEVO CASO AÑADIDO PARA MASTER PACK
                     texto = `Posible Master Pack\nEl día ${data.fecha} a las ${data.hora}, ${data.sexo} representante ${data.nombre}, da ingreso a la meli ${data.meli} de manera masiva en el proceso PUT AWAY, no respetando el 1 a 1 en el producto lo que provoco un posible master pack al no retirar las cajas y dejarlas completas. Esto nos puede ocasionar una discrepancia ya que al no estar seguros de que la caja cuente con una sola meli, además de que el producto no fue revisado al dar ingreso en nuestro site de manera individual corremos el riesgo que se lo lleven como caja y no como producto individual la meli. Posible monto de afectación: $${data.monto}.`;
+                    break;
+                case 'eliminacion_found':
+                    texto = `Buen día equipo,\n\nSolicito su apoyo para eliminar la meli ${data.meli} de la ubicación ${data.ubicacion}\n\nDurante el proceso de ${data.proceso}, ${data.sexo} representante ${data.nombre} registró por error contó cómo "found" ${data.piezas_fisicas} piezas de la meli ${data.meli} de este artículo, cuando el inventario correcto tenemos declarada la meli ${data.meli_lost} misma a la cual generó ${data.piezas_fisicas} lost por contarla en la misma ubicación con el código EAN ${data.codigo_universal}`;
                     break;
             }
 
-            // Los campos de seller, destino y ubicación ya se anexan automáticamente al final de todas las incidencias
+            // Anexo automático de información adicional al final
             texto += `\n\n*Información Adicional:*\n- Seller: ${data.seller}\n- Destino: ${data.destino}\n- Ubicación de la incidencia: ${data.ubicacion}`;
             
             textarea.value = texto;
